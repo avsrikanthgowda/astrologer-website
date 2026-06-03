@@ -293,7 +293,7 @@
         </div>
         <div class="gallery-item gallery-item--wide">
           <img src="images/gallery-5.jpg"
-               alt="Surya – The Sun God, Ruler of all Navagrahas (Majapahit era)" loading="lazy" />
+               alt="Surya – The Sun God, Ruler of all Navagrahas" loading="lazy" />
         </div>
         <div class="gallery-item">
           <img src="images/gallery-6.jpg"
@@ -483,7 +483,7 @@
         </div>
       </div>
 
-      <!-- Contact Form via FormSubmit (free, no backend needed) -->
+      <!-- Contact Form via FormSubmit -->
       <form
         class="contact-form"
         id="contactForm"
@@ -491,12 +491,10 @@
         method="POST"
         novalidate
       >
-        <!-- FormSubmit configuration -->
         <input type="hidden" name="_subject" value="New Astrology Consultation Request from Website" />
         <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="_template" value="table" />
-        <!-- Honeypot spam protection -->
-        <input type="text" name="_honey" style="display:none" />
+        <input type="text" name="_honeypot" style="display:none" />
 
         <h3>Send a Message</h3>
 
@@ -541,7 +539,7 @@
           Send Message ✦
         </button>
 
-        <p class="form-note">* Required fields. First use: check viceroy.srikanth@gmail.com for a FormSubmit activation email. I respond within 24 hours.</p>
+        <p class="form-note">* Required fields. I will respond within 24 hours.</p>
         <div id="formSuccess" class="form-success" hidden>
           ✅ Thank you! Your message has been sent. I will contact you soon.
         </div>
