@@ -1,0 +1,12 @@
+/*
+  # Prevent clickjacking — your site cannot be embedded in other sites' iframes
+  X-Frame-Options: SAMEORIGIN
+
+  # Prevent browsers guessing content types (MIME sniffing attacks)
+  X-Content-Type-Options: nosniff
+
+  # Don't leak full URL to third-party sites when user clicks a link
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Disable browser APIs this site never uses
+  Permissions-Policy: camera=(), microphone=(), payment=(), geolocation=()
