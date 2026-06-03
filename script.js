@@ -20,6 +20,7 @@
   const contactForm = document.getElementById('contactForm');
   const submitBtn  = document.getElementById('submitBtn');
   const formSuccess = document.getElementById('formSuccess');
+  const formError   = document.getElementById('formError');
   const yearEl     = document.getElementById('year');
 
   /* ---------- Current Year ---------- */
@@ -154,16 +155,40 @@
         headers: { 'Accept': 'application/json' }
       })
         .then(function (res) {
-          contactForm.reset();
-          if (formSuccess) formSuccess.hidden = false;
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message ✦'; }
+          if (res.ok) {
+            contactForm.reset();
+            if (formSuccess) formSuccess.hidden = false;
+            if (formError)   formError.hidden   = true;
+          } else {
+            // HTTP error from FormSubmit (e.g. 422, 500)
+            var errMsg = 'FormSubmit HTTP error: ' + res.status + ' ' + res.statusText;
+            console.error('[ContactForm]', errMsg);
+            _logFormError(errMsg);
+            if (formError)   formError.hidden   = false;
+            if (formSuccess) formSuccess.hidden = true;
+          }
         })
-        .catch(function () {
-          contactForm.reset();
-          if (formSuccess) formSuccess.hidden = false;
+        .catch(function (err) {
+          // Network failure or FormSubmit unreachable
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message ✦'; }
+          var errMsg = err ? err.message : 'Network error';
+          console.error('[ContactForm] Submission failed:', errMsg);
+          _logFormError(errMsg);
+          if (formError)   formError.hidden   = false;
+          if (formSuccess) formSuccess.hidden = true;
         });
-    });
+    });  // end submit listener
+
+    function _logFormError(message) {
+      try {
+        var logs = JSON.parse(localStorage.getItem('form_error_log') || '[]');
+        logs.push({ time: new Date().toISOString(), error: message });
+        // Keep only last 20 entries
+        if (logs.length > 20) logs = logs.slice(-20);
+        localStorage.setItem('form_error_log', JSON.stringify(logs));
+      } catch (e) { /* localStorage unavailable */ }
+    }
 
     // Remove invalid state on input
     contactForm.querySelectorAll('input, select, textarea').forEach(function (el) {

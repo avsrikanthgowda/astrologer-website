@@ -561,6 +561,16 @@ h3 { font-size: clamp(1.1rem, 2.5vw, 1.35rem); color: var(--color-gold); }
   font-size: 0.95rem;
   text-align: center;
 }
+.form-error {
+  margin-top: 1rem;
+  background: rgba(200,50,50,0.07);
+  border: 1px solid rgba(200,50,50,0.35);
+  color: #8B0000;
+  padding: 0.8em 1em;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  text-align: center;
+}
 
 /* ============================================
    FOOTER
