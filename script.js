@@ -140,40 +140,29 @@
         return;
       }
 
+      // Always use fetch so the page never redirects (works on file://, local network, and Cloudflare Pages).
+      // FormSubmit emails the submission and returns JSON — no _next redirect needed.
+      e.preventDefault();
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending…';
       }
-
-      // On file:// or local network IPs (192.168.x / 10.x / localhost) FormSubmit's
-      // _next redirect won't resolve. Use fetch so we stay on the page.
-      var host = window.location.hostname;
-      var isLocal = window.location.protocol === 'file:'
-        || host === 'localhost'
-        || host === '127.0.0.1'
-        || /^192\.168\./.test(host)
-        || /^10\./.test(host)
-        || /^172\.(1[6-9]|2\d|3[01])\./.test(host);
-
-      if (isLocal) {
-        e.preventDefault();
-        var formData = new FormData(contactForm);
-        fetch(contactForm.action, { method: 'POST', body: formData })
-          .then(function () {
-            contactForm.reset();
-            if (formSuccess) formSuccess.hidden = false;
-            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message ✦'; }
-          })
-          .catch(function () {
-            // FormSubmit may block cross-origin fetch — still show success since the POST likely went through
-            contactForm.reset();
-            if (formSuccess) formSuccess.hidden = false;
-            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message ✦'; }
-          });
-        return;
-      }
-      // On a real domain (Cloudflare Pages) the form submits naturally to FormSubmit.co
-      // and redirects to _next. First submission triggers the activation email.
+      var formData = new FormData(contactForm);
+      fetch(contactForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      })
+        .then(function (res) {
+          contactForm.reset();
+          if (formSuccess) formSuccess.hidden = false;
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message ✦'; }
+        })
+        .catch(function () {
+          contactForm.reset();
+          if (formSuccess) formSuccess.hidden = false;
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message ✦'; }
+        });
     });
 
     // Remove invalid state on input
