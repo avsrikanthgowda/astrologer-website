@@ -10,3 +10,17 @@
 
   # Disable browser APIs this site never uses
   Permissions-Policy: camera=(), microphone=(), payment=(), geolocation=()
+
+  # Force HTTPS for 1 year — browser will refuse to load site over HTTP
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+  # Content Security Policy — restrict what this site is allowed to load
+  # script-src: only our own script.js (no inline scripts, no third-party JS)
+  # style-src: our CSS + Google Fonts CSS + inline styles (needed for honeypot/JS-injected styles)
+  # font-src: Google Fonts files only
+  # img-src: our own images + data: URI for the Om favicon
+  # connect-src: only FormSubmit for the contact form fetch
+  # form-action: form can only POST to FormSubmit, nowhere else
+  # frame-ancestors: nobody can embed this site in an iframe
+  # base-uri: prevents base tag injection attacks
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://formsubmit.co; form-action https://formsubmit.co; frame-ancestors 'none'; base-uri 'self';
