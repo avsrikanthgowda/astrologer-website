@@ -407,6 +407,55 @@ h3 { font-size: clamp(1.1rem, 2.5vw, 1.35rem); color: var(--color-gold); }
 }
 
 /* ============================================
+   POOJAS CONDUCTED
+   ============================================ */
+.pooja-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--gap);
+}
+.pooja-group {
+  background: var(--color-card);
+  border: 1px solid rgba(200,134,10,0.18);
+  border-radius: var(--radius-md);
+  padding: 1.6rem 1.5rem;
+}
+.pooja-group-title {
+  font-family: var(--font-head);
+  font-size: 1rem;
+  color: var(--color-gold);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(200,134,10,0.2);
+}
+.pooja-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.pooja-list li {
+  font-size: 0.93rem;
+  color: var(--color-text);
+  padding-left: 1.1rem;
+  position: relative;
+}
+.pooja-list li::before {
+  content: "✦";
+  position: absolute;
+  left: 0;
+  color: var(--color-gold);
+  font-size: 0.6rem;
+  top: 0.25em;
+}
+.pooja-note {
+  color: var(--color-subtle);
+  font-size: 0.82rem;
+}
+
+/* ============================================
    GALLERY
    ============================================ */
 .gallery-grid {
