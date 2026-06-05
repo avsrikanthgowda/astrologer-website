@@ -112,21 +112,34 @@
 
       const nameEl    = document.getElementById('name');
       const phoneEl   = document.getElementById('phone');
-      const serviceEl = document.getElementById('service');
+      var serviceGroup = document.getElementById('serviceGroup');
 
       if (!nameEl.value.trim() || nameEl.value.trim().length < 2) {
         nameEl.classList.add('invalid');
         valid = false;
       }
 
-      const phonePattern = /^[+]?[0-9\s\-]{7,15}$/;
-      if (!phoneEl.value.trim() || !phonePattern.test(phoneEl.value.trim())) {
+      // Phone: optional +91 / 0 prefix, then 10 digits (Indian), or 7–15 digit international
+      var phoneRaw = phoneEl.value.trim();
+      var phoneStripped = phoneRaw.replace(/[\s\-()]/g, '');
+      var phonePattern = /^(\+91|0091|0)?[6-9]\d{9}$|^\+?[1-9]\d{6,14}$/;
+      if (!phoneRaw || !phonePattern.test(phoneStripped)) {
         phoneEl.classList.add('invalid');
         valid = false;
       }
 
-      if (!serviceEl.value) {
-        serviceEl.classList.add('invalid');
+      var emailEl = document.getElementById('email');
+      if (emailEl && emailEl.value.trim()) {
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+        if (!emailPattern.test(emailEl.value.trim())) {
+          emailEl.classList.add('invalid');
+          valid = false;
+        }
+      }
+
+      var checkedServices = contactForm.querySelectorAll('input[name="service"]:checked');
+      if (checkedServices.length === 0) {
+        serviceGroup.classList.add('invalid');
         valid = false;
       }
 
@@ -158,14 +171,15 @@
           if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Send Message ✦'; }
           if (res.ok) {
             contactForm.reset();
-            if (formSuccess) formSuccess.hidden = false;
+            _resetServiceCheckboxes();
+            if (formSuccess) { formSuccess.hidden = false; _autoDismiss(formSuccess); }
             if (formError)   formError.hidden   = true;
           } else {
             // HTTP error from FormSubmit (e.g. 422, 500)
             var errMsg = 'FormSubmit HTTP error: ' + res.status + ' ' + res.statusText;
             console.error('[ContactForm]', errMsg);
             _logFormError(errMsg);
-            if (formError)   formError.hidden   = false;
+            if (formError)   { formError.hidden = false; _autoDismiss(formError); }
             if (formSuccess) formSuccess.hidden = true;
           }
         })
@@ -175,10 +189,27 @@
           var errMsg = err ? err.message : 'Network error';
           console.error('[ContactForm] Submission failed:', errMsg);
           _logFormError(errMsg);
-          if (formError)   formError.hidden   = false;
+          if (formError)   { formError.hidden = false; _autoDismiss(formError); }
           if (formSuccess) formSuccess.hidden = true;
         });
     });  // end submit listener
+
+    function _autoDismiss(el) {
+      setTimeout(function () { if (el) el.hidden = true; }, 35000);
+    }
+
+    function _resetServiceCheckboxes() {
+      var sg = document.getElementById('serviceGroup');
+      var msg = document.getElementById('serviceMaxMsg');
+      if (!sg) return;
+      sg.classList.remove('invalid');
+      sg.querySelectorAll('input[type="checkbox"]').forEach(function (cb) {
+        cb.disabled = false;
+        var lbl = cb.closest('.checkbox-label');
+        if (lbl) lbl.classList.remove('disabled');
+      });
+      if (msg) msg.hidden = true;
+    }
 
     function _logFormError(message) {
       try {
@@ -194,6 +225,29 @@
     contactForm.querySelectorAll('input, select, textarea').forEach(function (el) {
       el.addEventListener('input', function () { this.classList.remove('invalid'); });
     });
+
+    // Checkbox group: remove invalid state + enforce max 4
+    var serviceGroup = document.getElementById('serviceGroup');
+    var serviceMaxMsg = document.getElementById('serviceMaxMsg');
+    if (serviceGroup) {
+      serviceGroup.addEventListener('change', function () {
+        serviceGroup.classList.remove('invalid');
+        var allBoxes = serviceGroup.querySelectorAll('input[type="checkbox"]');
+        var checked = serviceGroup.querySelectorAll('input[type="checkbox"]:checked');
+        var atMax = checked.length >= 4;
+        serviceMaxMsg.hidden = !atMax;
+        allBoxes.forEach(function (cb) {
+          var lbl = cb.closest('.checkbox-label');
+          if (!cb.checked && atMax) {
+            cb.disabled = true;
+            if (lbl) lbl.classList.add('disabled');
+          } else {
+            cb.disabled = false;
+            if (lbl) lbl.classList.remove('disabled');
+          }
+        });
+      });
+    }
   }
 
   /* ---------- Intersection Observer – Fade-in cards ---------- */
